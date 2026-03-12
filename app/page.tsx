@@ -1,11 +1,11 @@
+import ChatClient from "@/components/ChatClient";
+
 export default function Home() {
   return (
-    <main className="min-h-screen bg-slate-900 text-white flex flex-col items-center justify-center p-6">
-      <h1 className="text-4xl font-bold">Miko AI</h1>
-
-      <p className="text-slate-400 text-center mt-2">
-        Your personal AI assistant
-      </p>
+    <main className="min-h-screen bg-slate-900 px-6 py-10 text-white">
+      <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-5xl items-center justify-center">
+        <ChatClient />
+      </div>
     </main>
   );
 }
