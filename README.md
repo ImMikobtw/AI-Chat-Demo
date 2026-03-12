@@ -1,36 +1,160 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Miko AI Chat Demo
 
-## Getting Started
+A minimal full-stack web application that allows users to send text or voice messages and receive responses from an AI model.
 
-First, run the development server:
+The project was built as a test assignment for a full-stack developer position I am aiming for. Wish me a good luck!
+
+---
+
+# Features
+
+• Text input for sending questions to AI  
+• Voice input using the Web Speech API  
+• Chat-style conversation history  
+• Loading and error handling states  
+• Automatic scrolling for new messages  
+• Clean and minimal UI built with Tailwind CSS  
+• Secure AI API integration through a backend route
+
+---
+
+# Tech Stack
+
+Frontend:
+
+- Next.js (App Router)
+- React
+- TypeScript <3
+- Tailwind CSS
+
+Backend:
+
+- Next.js Route Handlers (API routes)
+
+AI Integration:
+
+- OpenAI-compatible Chat API
+
+---
+
+# Architecture Overview
+
+The application follows a simple full-stack pattern:
+
+Client → Next.js API route → AI API
+
+1. The client sends a message to `/api/chat`
+2. The server validates the request
+3. The server calls the AI API
+4. The response is returned to the client
+5. The message is added to the chat history
+
+The AI API key is stored securely on the server using environment variables.
+
+---
+
+# Project Structure
+
+src
+├─ app
+│ ├─ page.tsx
+│ └─ api
+│ └─ chat
+│ └─ route.ts
+│
+├─ components
+│ ├─ ChatClient.tsx
+│ ├─ ChatMessages.tsx
+│ ├─ ChatInput.tsx
+│ └─ VoiceButton.tsx
+│
+├─ lib
+│ └─ ai.ts
+│
+└─ types
+├─ chat.ts
+└─ speech.d.ts
+
+---
+
+# Getting Started
+
+Clone the repository:
+
+```bash
+git clone https://github.com/ImMikobtw/AI-Chat-Demo.git
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Set up environment variables:
+
+Create a `.env.local` file in the root directory, you can ask me a key BTW:
+
+```bash
+OPENAI_API_KEY=fxckingKey
+```
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# Voice Input
 
-## Learn More
+Voice input is implemented using the **Web Speech API**.
 
-To learn more about Next.js, take a look at the following resources:
+When the microphone button is pressed:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. The browser starts speech recognition
+2. Spoken words are converted to text
+3. The recognized text is inserted into the message input field
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Note:  
+Speech recognition is supported in most Chromium-based browsers.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Error Handling
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The application handles errors at multiple levels:
+
+Client:
+
+- Network errors
+- Disabled input during loading
+
+Server:
+
+- Request validation
+- AI API failures
+- Unexpected runtime errors
+
+---
+
+# Possible Improvements
+
+If this project were extended further:
+
+- Streaming AI responses
+- Persisting chat history
+- Message editing
+- Dark/light theme switch
+- Improved mobile layout
+- Rate limiting for API requests
+
+---
+
+# Author
+
+Miras Tleusserik
+Full-Stack Developer
