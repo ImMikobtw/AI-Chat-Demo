@@ -26,7 +26,7 @@ export default function ChatInput({
         value={message}
         onChange={(e) => onMessageChange(e.target.value)}
         onKeyDown={onKeyDown}
-        placeholder="Ask whatever you want"
+        placeholder="Type your message here..."
         rows={4}
         disabled={isLoading}
         className="w-full resize-none rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-blue-400 disabled:opacity-60"
@@ -48,6 +48,9 @@ export default function ChatInput({
           {isLoading ? "Sending..." : "Send"}
         </button>
       </div>
+        <p className="text-xs text-slate-500">
+            Your message is sent to the server, which securely requests the AI API.
+        </p>
     </div>
   );
 }

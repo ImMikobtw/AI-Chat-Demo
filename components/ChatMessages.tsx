@@ -15,9 +15,14 @@ export default function ChatMessages({
   return (
     <div className="mb-4 flex h-[420px] flex-col gap-3 overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/50 p-4">
       {messages.length === 0 ? (
-        <div className="flex flex-1 items-center justify-center text-center text-slate-400">
-          Your conversation will appear here.
-        </div>
+    <div className="flex flex-1 flex-col items-center justify-center text-center text-slate-400">
+        <p className="text-base font-medium text-slate-300">
+            Start your conversation
+        </p>
+        <p className="mt-2 max-w-md text-sm text-slate-400">
+            Type a message below or use the voice input button to convert speech into text.
+        </p>
+    </div>
       ) : (
         messages.map((item) => (
           <div

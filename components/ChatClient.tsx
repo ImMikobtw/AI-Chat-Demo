@@ -68,6 +68,12 @@ export default function ChatClient() {
     }
   };
 
+  const handleClearChat = () => {
+    setMessages([]);
+    setError("");
+    setMessage("");
+  }
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -110,14 +116,24 @@ export default function ChatClient() {
 
   return (
     <section className="flex w-full max-w-3xl flex-col rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur">
-      <div className="mb-6">
-        <h1 className="text-4xl font-bold tracking-tight">Hi there!</h1>
-        <p className="mt-3 text-lg text-slate-300">
-          What would you like to know?
-        </p>
-        <p className="mt-2 text-sm text-slate-400">
-          Ask a question and get a response from AI.
-        </p>
+      <div className="mb-6 flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+            Miko AI
+          </h1>
+          <p className="mt-3 text-base text-slate-300 sm:text-lg">
+            Ask anything and get a response from AI.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleClearChat}
+          disabled={messages.length === 0 && !message && !error}
+          className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+            Clear chat
+        </button>
       </div>
 
       <ChatMessages
