@@ -53,30 +53,6 @@ The AI API key is stored securely on the server using environment variables.
 
 ---
 
-# Project Structure
-
-src
-├─ app
-│ ├─ page.tsx
-│ └─ api
-│ └─ chat
-│ └─ route.ts
-│
-├─ components
-│ ├─ ChatClient.tsx
-│ ├─ ChatMessages.tsx
-│ ├─ ChatInput.tsx
-│ └─ VoiceButton.tsx
-│
-├─ lib
-│ └─ ai.ts
-│
-└─ types
-├─ chat.ts
-└─ speech.d.ts
-
----
-
 # Getting Started
 
 Clone the repository:
