@@ -148,7 +148,7 @@ export default function ChatClient() {
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            AI Chat Demo
+            Miko AI Demo
           </h1>
           <p className="mt-3 text-base text-slate-300 sm:text-lg">
             Ask anything and get a response from AI.
