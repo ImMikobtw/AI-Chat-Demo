@@ -1,77 +1,114 @@
 "use client";
 
-import { useState } from "react";
-
-type Message = {
-    id: string;
-    role: "user" | "assistant";
-    content: string;
-}
+import { useEffect, useRef, useState } from "react";
+import ChatInput from "@/components/ChatInput";
+import ChatMessages from "@/components/ChatMessages";
+import type { Message } from "@/types/chat";
 
 export default function ChatClient() {
-    const [message, setMessage] = useState("");
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
 
-    const handleSend = async () => {
-        if (!message.trim() || isLoading) return;
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
-        const trimmedMessage = message.trim();
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, isLoading]);
 
-        const userMessage: Message = {
-            id: crypto.randomUUID(),
-            role: "user",
-            content: trimmedMessage,
+  const handleSend = async () => {
+    if (!message.trim() || isLoading) return;
+
+    const trimmedMessage = message.trim();
+
+    const userMessage: Message = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: trimmedMessage,
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setMessage("");
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          message: trimmedMessage,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Failed to get response.");
+      }
+
+      const assistantMessage: Message = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: data.reply,
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Something went wrong.";
+
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      void handleSend();
+    }
+  };
+
+  const startVoiceInput = () => {
+        const SpeechRecognitionConstructor =
+            window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognitionConstructor) {
+            alert("Speech recognition is not supported in your browser.");
+            return;
+        }
+
+        const recognition = new SpeechRecognitionConstructor();
+
+        recognition.lang = "en-US";
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        setIsRecording(true);
+        recognition.start();
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+
+            setMessage((prev) => (prev ? `${prev} ${transcript}` : transcript));
         };
 
-        setMessages((prev) => [...prev, userMessage]);
-        setMessage("")
-        setError("");
-        setIsLoading(true);
+        recognition.onerror = () => {
+            setIsRecording(false);
+        };
 
-        try {
-            const res = await fetch("/api/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    message: trimmedMessage,
-                }),
-            });
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data?.error || "Failed to get response");
-            }
-
-            const assistantMessage: Message = {
-                id: crypto.randomUUID(),
-                role: "assistant",
-                content: data.reply,
-            };
-
-            setMessages((prev) => [...prev, assistantMessage]);
-        } catch (err) {
-            const errorMessage =
-                err instanceof Error ? err.message : "Something went wrong";
-            
-            setError(errorMessage);
-        } finally {
-            setIsLoading(false);
-        }
+        recognition.onend = () => {
+            setIsRecording(false);
+        };
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            void handleSend();
-        }
-    };
-
-    return (
+  return (
     <section className="flex w-full max-w-3xl flex-col rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur">
       <div className="mb-6">
         <h1 className="text-4xl font-bold tracking-tight">Hi there!</h1>
@@ -83,36 +120,11 @@ export default function ChatClient() {
         </p>
       </div>
 
-      <div className="mb-4 flex min-h-[320px] flex-col gap-3 rounded-2xl border border-white/10 bg-slate-900/50 p-4">
-        {messages.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center text-center text-slate-400">
-            Your conversation will appear here.
-          </div>
-        ) : (
-          messages.map((item) => (
-            <div
-              key={item.id}
-              className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-6 shadow-sm ${
-                item.role === "user"
-                  ? "self-end bg-blue-600 text-white"
-                  : "self-start border border-white/10 bg-slate-800 text-slate-100"
-              }`}
-            >
-              <p className="mb-1 text-xs uppercase tracking-wide opacity-70">
-                {item.role === "user" ? "You" : "AI"}
-              </p>
-              <p className="whitespace-pre-wrap">{item.content}</p>
-            </div>
-          ))
-        )}
-
-        {isLoading && (
-          <div className="max-w-[85%] self-start rounded-2xl border border-white/10 bg-slate-800 px-4 py-3 text-sm text-slate-300">
-            <p className="mb-1 text-xs uppercase tracking-wide opacity-70">AI</p>
-            <p>Thinking...</p>
-          </div>
-        )}
-      </div>
+      <ChatMessages
+        messages={messages}
+        isLoading={isLoading}
+        messagesEndRef={messagesEndRef}
+      />
 
       {error && (
         <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
@@ -120,28 +132,15 @@ export default function ChatClient() {
         </div>
       )}
 
-      <div className="space-y-4">
-        <textarea
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Ask whatever you want"
-          rows={4}
-          disabled={isLoading}
-          className="w-full resize-none rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-blue-400 disabled:opacity-60"
-        />
-
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={() => void handleSend()}
-            disabled={!message.trim() || isLoading}
-            className="rounded-xl bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {isLoading ? "Sending..." : "Send"}
-          </button>
-        </div>
-      </div>
+      <ChatInput
+        message={message}
+        isLoading={isLoading}
+        isRecording={isRecording}
+        onMessageChange={setMessage}
+        onSend={() => void handleSend()}
+        onVoiceInput={startVoiceInput}
+        onKeyDown={handleKeyDown}
+      />
     </section>
   );
 }
