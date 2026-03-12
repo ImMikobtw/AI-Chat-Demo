@@ -21,18 +21,17 @@ export default function ChatInput({
   onKeyDown,
 }: ChatInputProps) {
   return (
-    <div className="space-y-4">
-      <textarea
+    <div className="relative">
+      <input
         value={message}
         onChange={(e) => onMessageChange(e.target.value)}
         onKeyDown={onKeyDown}
-        placeholder="Type your message here..."
-        rows={4}
+        placeholder="Ask whatever you want"
         disabled={isLoading}
         className="w-full resize-none rounded-2xl border border-white/10 bg-slate-900/70 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-blue-400 disabled:opacity-60"
       />
 
-      <div className="flex items-center justify-between gap-3">
+      <div className="absolute right-3 top-1/2 flex -translate-y-1/2 gap-2">
         <VoiceButton
           isRecording={isRecording}
           onClick={onVoiceInput}
@@ -43,14 +42,11 @@ export default function ChatInput({
           type="button"
           onClick={onSend}
           disabled={!message.trim() || isLoading}
-          className="rounded-xl bg-blue-600 px-5 py-3 font-medium text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-full bg-blue-500 px-4 py-2 text-white font-medium text-white transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isLoading ? "Sending..." : "Send"}
+          {isLoading ? "..." : "→"}
         </button>
       </div>
-        <p className="text-xs text-slate-500">
-            Your message is sent to the server, which securely requests the AI API.
-        </p>
     </div>
   );
 }

@@ -72,57 +72,89 @@ export default function ChatClient() {
     setMessages([]);
     setError("");
     setMessage("");
-  }
+  };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      void handleSend();
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        void handleSend();
     }
   };
 
   const startVoiceInput = () => {
-        const SpeechRecognitionConstructor =
-            window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognitionConstructor =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
 
-        if (!SpeechRecognitionConstructor) {
-            alert("Speech recognition is not supported in your browser.");
-            return;
-        }
+    if (!SpeechRecognitionConstructor) {
+      alert("Speech recognition is not supported in your browser.");
+      return;
+    }
 
-        const recognition = new SpeechRecognitionConstructor();
+    const recognition = new SpeechRecognitionConstructor();
 
-        recognition.lang = "en-US";
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
 
-        setIsRecording(true);
-        recognition.start();
+    setIsRecording(true);
+    recognition.start();
 
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-
-            setMessage((prev) => (prev ? `${prev} ${transcript}` : transcript));
-        };
-
-        recognition.onerror = () => {
-            setIsRecording(false);
-        };
-
-        recognition.onend = () => {
-            setIsRecording(false);
-        };
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setMessage((prev) => (prev ? `${prev} ${transcript}` : transcript));
     };
 
+    recognition.onerror = () => {
+      setIsRecording(false);
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+  };
+
+  const isHero = messages.length === 0;
+
+  if (isHero) {
+    return (
+      <div className="w-full max-w-3xl text-center">
+        <div className="mb-12">
+          <h1 className="text-5xl font-bold tracking-tight">Hi there!</h1>
+
+          <p className="mt-6 text-2xl font-semibold text-blue-100">
+            What would you like to know?
+          </p>
+
+          <p className="mt-4 text-sm text-blue-200">
+            Use one of the most common prompts below or ask your own question
+          </p>
+        </div>
+
+        <ChatInput
+          message={message}
+          isLoading={isLoading}
+          isRecording={isRecording}
+          onMessageChange={setMessage}
+          onSend={() => void handleSend()}
+          onVoiceInput={startVoiceInput}
+          onKeyDown={handleKeyDown}
+        />
+      </div>
+    );
+  }
+
   return (
-    <section className="flex w-full max-w-3xl flex-col rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur">
+    <section className="flex w-full max-w-4xl flex-col rounded-2xl border border-white/10 bg-white/5 p-6 shadow-xl backdrop-blur">
       <div className="mb-6 flex items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Miko AI
+            AI Chat Demo
           </h1>
           <p className="mt-3 text-base text-slate-300 sm:text-lg">
             Ask anything and get a response from AI.
+          </p>
+          <p className="mt-2 text-sm text-slate-400">
+            Press Enter to send, Shift + Enter for a new line.
           </p>
         </div>
 
@@ -132,7 +164,7 @@ export default function ChatClient() {
           disabled={messages.length === 0 && !message && !error}
           className="rounded-xl border border-white/10 px-4 py-2 text-sm text-slate-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
         >
-            Clear chat
+          Clear chat
         </button>
       </div>
 
