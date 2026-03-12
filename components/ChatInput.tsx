@@ -8,7 +8,7 @@ type ChatInputProps = {
   onMessageChange: (value: string) => void;
   onSend: () => void;
   onVoiceInput: () => void;
-  onKeyDown: (event: KeyboardEvent<HTMLTextAreaElement>) => void;
+  onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void;
 };
 
 export default function ChatInput({
